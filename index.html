@@ -3,13 +3,48 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta http-equiv="refresh" content="0; url=https://script.google.com/macros/s/AKfycbyJ-yJxwPpsSy7gN66u9Z1bf7HpYd2uV9-bnHwITrVxl77DfNwuMcKTDVMxtIA6lplUhw/exec">
-<title>Valliamman Finance</title>
+<title>Valliamman Finance | Sign in</title>
+<script src="https://accounts.google.com/gsi/client" async defer></script>
+<style>
+  :root { color-scheme: light; font-family: "Segoe UI", sans-serif; color: #172033; background: #edf2f7; }
+  * { box-sizing: border-box; }
+  body { min-height: 100vh; margin: 0; display: grid; place-items: center; padding: 24px; background: linear-gradient(135deg, #eaf3f2, #f3f5f8 55%, #e8edf5); }
+  main { width: min(100%, 440px); background: #fff; border: 1px solid #dfe5ec; border-radius: 12px; padding: 32px; box-shadow: 0 16px 48px #24364b1c; }
+  .mark { width: 42px; height: 42px; display: grid; place-items: center; border-radius: 10px; background: #d9eee8; color: #176b58; font-weight: 700; }
+  h1 { margin: 22px 0 8px; font-size: 24px; }
+  p { color: #596579; line-height: 1.5; margin: 0 0 22px; }
+  #googleButton { min-height: 44px; }
+  #status { min-height: 20px; margin-top: 16px; color: #a12a2a; font-size: 13px; }
+</style>
 </head>
 <body>
-<p>Opening the portal... <a href="https://script.google.com/macros/s/AKfycbyJ-yJxwPpsSy7gN66u9Z1bf7HpYd2uV9-bnHwITrVxl77DfNwuMcKTDVMxtIA6lplUhw/exec">Click here if it does not open.</a></p>
+<main>
+  <div class="mark" aria-hidden="true">VF</div>
+  <h1>Valliamman Finance</h1>
+  <p>Sign in with an approved Google account to continue.</p>
+  <div id="googleButton"></div>
+  <p id="status" role="status" aria-live="polite"></p>
+</main>
+<form id="portalForm" method="post" action="https://script.google.com/macros/s/AKfycbyJ-yJxwPpsSy7gN66u9Z1bf7HpYd2uV9-bnHwITrVxl77DfNwuMcKTDVMxtIA6lplUhw/exec" hidden>
+  <input type="hidden" name="idToken">
+</form>
 <script>
-  window.location.replace("https://script.google.com/macros/s/AKfycbyJ-yJxwPpsSy7gN66u9Z1bf7HpYd2uV9-bnHwITrVxl77DfNwuMcKTDVMxtIA6lplUhw/exec");
+  const clientId = "255668845060-ge04vdpvg6mn2t3og0djj6l1fca13692.apps.googleusercontent.com";
+  const status = document.getElementById("status");
+  function signIn(response) {
+    if (!response.credential) { status.textContent = "Google sign-in did not return a credential."; return; }
+    const form = document.getElementById("portalForm");
+    form.elements.idToken.value = response.credential;
+    form.submit();
+  }
+  window.addEventListener("load", () => {
+    if (!window.google || !google.accounts || !google.accounts.id) {
+      status.textContent = "Google Sign-In could not be loaded. Reload and try again.";
+      return;
+    }
+    google.accounts.id.initialize({ client_id: clientId, callback: signIn, auto_select: false });
+    google.accounts.id.renderButton(document.getElementById("googleButton"), { theme: "outline", size: "large", text: "signin_with" });
+  });
 </script>
 </body>
 </html>
